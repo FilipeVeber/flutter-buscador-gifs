@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_buscador_gif/UI/gif_page.dart';
 import 'package:http/http.dart' as http;
 
 final String BASE_URL = "https://api.giphy.com/v1/gifs";
@@ -116,7 +117,12 @@ class _HomePageState extends State<HomePage> {
                 height: 300,
                 fit: BoxFit.cover,
               ),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => GifPage(data[index])));
+              },
               onLongPress: () {},
             );
           } else {
