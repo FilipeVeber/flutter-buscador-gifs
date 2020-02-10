@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_buscador_gif/UI/gif_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:share/share.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 final String BASE_URL = "https://api.giphy.com/v1/gifs";
 final String API_KEY = "XvF8S5255gqi7j1ll3vkOelli3LAgmnj";
@@ -21,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   Future<Map> _getGIFs() async {
     http.Response response;
 
-    if (_search == Null) {
+    if (_search == Null || _search.isEmpty) {
       response = await http
           .get("$BASE_URL/trending?api_key=$API_KEY&limit=20&rating=G");
     } else {
@@ -94,7 +95,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   int _getCount(int pagination) {
-    if (_search == null) {
+    if (_search == null || _search.isEmpty) {
       return pagination;
     } else {
       return pagination + 1;
@@ -113,10 +114,11 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (context, index) {
           if (_search == null || index < pagination["count"]) {
             return GestureDetector(
-              child: Image.network(
-                data[index]["images"]["fixed_height"]["url"],
+              child: FadeInImage.memoryNetwork(
                 height: 300,
                 fit: BoxFit.cover,
+                placeholder: kTransparentImage,
+                image: data[index]["images"]["fixed_height"]["url"],
               ),
               onTap: () {
                 Navigator.push(
