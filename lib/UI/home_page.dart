@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_buscador_gif/UI/gif_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:share/share.dart';
 
 final String BASE_URL = "https://api.giphy.com/v1/gifs";
 final String API_KEY = "XvF8S5255gqi7j1ll3vkOelli3LAgmnj";
@@ -123,7 +124,9 @@ class _HomePageState extends State<HomePage> {
                     MaterialPageRoute(
                         builder: (context) => GifPage(data[index])));
               },
-              onLongPress: () {},
+              onLongPress: () {
+                Share.share(data[index]["images"]["fixed_height"]["url"]);
+              },
             );
           } else {
             return Container(
