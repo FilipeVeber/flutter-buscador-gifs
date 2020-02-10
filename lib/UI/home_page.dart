@@ -24,19 +24,10 @@ class _HomePageState extends State<HomePage> {
           .get("$BASE_URL/trending?api_key=$API_KEY&limit=20&rating=G");
     } else {
       response = await http.get(
-          "$BASE_URL/search?api_key=$API_KEY&q=$_search&limit=20&offset=$_offset&rating=G&lang=en");
+          "$BASE_URL/search?api_key=$API_KEY&q=$_search&limit=19&offset=$_offset&rating=G&lang=en");
     }
 
     return json.decode(response.body);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _getGIFs().then((map) {
-      print(map);
-    });
   }
 
   @override
@@ -60,6 +51,12 @@ class _HomePageState extends State<HomePage> {
                   border: OutlineInputBorder()),
               style: TextStyle(color: Colors.white, fontSize: 18),
               textAlign: TextAlign.center,
+              onSubmitted: (text) {
+                setState(() {
+                  _search = text;
+                  _offset = 0;
+                });
+              },
             ),
           ),
           Expanded(
@@ -94,6 +91,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  int _getCount(int pagination) {
+    if (_search == null) {
+      return pagination;
+    } else {
+      return pagination + 1;
+    }
+  }
+
   Widget _createGIFTable(BuildContext context, AsyncSnapshot snapshot) {
     var data = snapshot.data["data"];
     var pagination = snapshot.data["pagination"];
@@ -102,17 +107,43 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.all(10),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10),
-        itemCount: pagination["count"],
+        itemCount: _getCount(pagination["count"]),
         itemBuilder: (context, index) {
-          return GestureDetector(
-            child: Image.network(
-              data[index]["images"]["fixed_height"]["url"],
-              height: 300,
-              fit: BoxFit.cover,
-            ),
-            onTap: () {},
-            onLongPress: () {},
-          );
+          if (_search == null || index < pagination["count"]) {
+            return GestureDetector(
+              child: Image.network(
+                data[index]["images"]["fixed_height"]["url"],
+                height: 300,
+                fit: BoxFit.cover,
+              ),
+              onTap: () {},
+              onLongPress: () {},
+            );
+          } else {
+            return Container(
+              child: GestureDetector(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 70,
+                    ),
+                    Text(
+                      "Carregar mais...",
+                      style: TextStyle(color: Colors.white, fontSize: 22),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  setState(() {
+                    _offset += 19;
+                  });
+                },
+              ),
+            );
+          }
         });
   }
 }
